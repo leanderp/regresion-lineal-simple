@@ -1,12 +1,12 @@
 ---
-title: "Evaluacion 4 - Estadistica"
+title: "Regresion Lineal Simple"
 author: "Leander Perez"
 date: "3/7/2020"
 output: html_document
 ---
 
 
-## Regresion lineal con el lenguaje de programacion `R`
+## Regresion lineal con el lenguaje de programacion `R`y `R Estudio`
 
 Ejercicio:
 Calcular el costo de una casa segun las siguientes variables 
@@ -14,7 +14,7 @@ Calcular el costo de una casa segun las siguientes variables
 ### Leemos los datos
 
 ```{r}
-df = read.csv("../../../Downloads/kc_house_data.csv", header = TRUE) # Datos en un archivo csv
+df = read.csv("kc_house_data.csv", header = TRUE) # Datos en un archivo csv
 df = df[3:6] # Tomamos los datos relevantes a la investigacion
 names(df) = c("precio","habitaciones","banos","superficie") # Cambiamos el nombre a las variables
 head(df) # Encabezado de los datos
