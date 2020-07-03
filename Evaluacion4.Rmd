@@ -1,0 +1,103 @@
+---
+title: "Evaluacion 4 - Estadistica"
+author: "Leander Perez"
+date: "3/7/2020"
+output: html_document
+---
+
+
+## Regresion lineal con el lenguaje de programacion `R`
+
+Ejercicio:
+Calcular el costo de una casa segun las siguientes variables 
+
+### Leemos los datos
+
+```{r}
+df = read.csv("../../../Downloads/kc_house_data.csv", header = TRUE) # Datos en un archivo csv
+df = df[3:6] # Tomamos los datos relevantes a la investigacion
+names(df) = c("precio","habitaciones","banos","superficie") # Cambiamos el nombre a las variables
+head(df) # Encabezado de los datos
+str(df) # Tipos de Datos
+```
+La tabla consta de `4` variables y `21613` datos , que varian entre `num = flotante` y `int = entero`.
+
+## Graficamos los datos 
+
+Observamos las corelaciones que hay entre las variables
+```{r}
+pairs(df) #Grafica los datos y los antepone ante todas las variables
+```
+
+Segun los graficos vemos que el que existe mayor relacion para aplicar la regresion lineal es a las variables `precio` y `superficie` por lo cual la usaremos para pronosticar un precio de una casa segun su superficie. 
+
+Para verificar los datos ahora mediremos la correlacion entre esas 2 variables con la funcion `cor`.
+```{r}
+attach(df) # Accede a las variables simples
+cor(superficie, precio) #Mide la correlacion
+```
+La variable `superficie` y `precio` tienen una correlacion del **70%**. Lo cual nos indica que tienen una buena correlacion para aplicar la regresion lineal.
+
+## Modelo de regresion Lineal
+
+Colocamos el precio como primera variable dependiente (la que vamos a predecir) en este caso el `precio` y `superficie` seria la variable independiente. 
+```{r}
+mylm = lm(precio ~ superficie) #Modelo de regresion lineal
+
+options(scipen = 999) #Evitamos la notacion cientifica
+
+# Graficamos el modelo
+plot(superficie, precio, xlab = "Superficie", ylab = "Precio de las casas", main = "Prueba de regresion Lineal") #Grafico de puntos
+abline(mylm, col = "green") #Linea de la regresion lineal
+
+```
+
+## Resultado del modelo de regresion lineal
+```{r}
+summary(mylm) # Tabla resumen de el modelo de regresion lineal
+```
+Segun el modelo  nos indica lo siguiente:
+
+- La variable `p-value` de este modelo nos da un nivel de significancia del 99.99%. Lo que se  presupone que el modelo es valido
+- La variable  `R-squared` indica que el 49% de los precios vienen explicado por nuestra variable independiente `superficie`
+
+
+## Predecir valores a base de un modelo de regresion
+Vamos a calcular cuanto seria el precio de una casa si tiene una superficie de `2000` pies cuadrados.
+
+```{r}
+predict(mylm, data.frame(superficie = 2000))
+```
+El calculo nos nos da `517666.4 ` para asegurarnos que este correcto lo comprobamos
+
+## Comprobacion
+
+La formula de la ecuacion de la recta que en este caso seria: $$ValorestimadoIntersector + Valorestimadosuperficie * El valor a pronosticar$$
+```{r}
+#y = b - mx
+y = -43580.743 + 280.624*2000
+y
+```
+
+Al ver los resultados vemos que concuerdan con el modelo de regresion lineal. 
+
+## Datos de la Prediccion
+
+Al ser un precio de una vivienda normalmente se aplica un intervalo de precio para que se evalue dentro de un determinado rango. Es este caso aplique
+un intervalo del `+-5%`. Dandonos asi un rango minimo, el pronostico y un rango maximo.
+
+```{r}
+predict(mylm, data.frame(superficie = 2000), level = 0.95, interval = "prediction")
+```
+
+## Tabla con datos de la prediccion
+
+Ahora realizo un cuadro comparando el modelo de regresion lineal ya entrenado con los valores de los datos originales para comparar si el precio de venta
+corresponde a el calculo de la regresion. 
+
+```{r}
+resultado = data.frame(superficie, precio, mylm$fitted.values, round(precio - mylm$fitted.values))
+names(resultado) = c("superficie","precio","estimado","diferencias")
+head(resultado,25) # Imprimimos las primeras 25 lineas 
+```
+
